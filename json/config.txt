@@ -9,7 +9,19 @@
       "https+local://1.1.1.1/dns-query",
       "https+local://8.8.8.8/dns-query",
       "tls://dns.adguard.com",
-      "localhost"
+      "localhost",
+      "https+local://9.9.9.9/dns-query",
+      "https+local://94.140.14.14/dns-query",
+      "https+local://94.140.15.15/dns-query",
+      "https+local://208.67.222.222/dns-query",
+      "https+local://208.67.220.220/dns-query",
+      "https+local://76.76.2.0/dns-query",
+      "https+local://76.76.10.0/dns-query",
+      "tls://dns.google",
+      "tls://dns.quad9.net",
+      "tls://dot1.appliedprivacy.net",
+      "tls://dns.cloudflare.com",
+      "tls://dns.nextdns.io"
     ],
     "queryStrategy": "UseIP",
     "fake-ip-range": "198.18.0.1/16",
@@ -144,11 +156,6 @@
     {
       "protocol": "freedom",
       "settings": {}
-    },
-    {
-      "protocol": "blackhole",
-      "settings": {},
-      "tag": "blocked"
     }
   ],
   "routing": {
@@ -171,7 +178,7 @@
           "fc00::/7",
           "fe80::/10"
         ],
-        "outboundTag": "blocked"
+        "outboundTag": "freedom"
       },
       {
         "type": "field",
@@ -180,18 +187,8 @@
       },
       {
         "type": "field",
-        "outboundTag": "blocked",
+        "outboundTag": "freedom",
         "protocol": ["bittorrent"]
-      },
-      {
-        "type": "field",
-        "domain": ["geosite:cn"],
-        "outboundTag": "blocked"
-      },
-      {
-        "type": "field",
-        "domain": ["geosite:category-ads-all"],
-        "outboundTag": "blocked"
       }
     ]
   },
