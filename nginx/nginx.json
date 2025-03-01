@@ -1,0 +1,118 @@
+user www-data;
+worker_processes auto;
+worker_rlimit_nofile 100000;
+
+error_log /var/log/nginx/error.log notice;
+pid /var/run/nginx.pid;
+
+events {
+    worker_connections 65535;
+    multi_accept on;
+    use epoll;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    log_format main '[$time_local] $proxy_protocol_addr "$http_user_agent"';
+    access_log /var/log/nginx/access.log main;
+
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 75;
+    keepalive_requests 100000;
+    client_body_timeout 300;
+    client_header_timeout 300;
+    send_timeout 300;
+    reset_timedout_connection on;
+    
+    proxy_buffering off;
+    proxy_request_buffering off;
+    proxy_max_temp_file_size 0;
+    
+    gzip on;
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_comp_level 5;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+    
+    server {
+        listen 80 reuseport;
+        listen [::]:80 reuseport;
+        listen 443 ssl http2 reuseport;
+        listen [::]:443 http2 reuseport;
+        server_name farelvpn.com;
+
+        root /var/www/html;
+        autoindex on;
+        access_log /dev/null;
+        error_log /dev/null;
+
+        ssl_certificate /usr/local/etc/v2ray/v2ray.crt;
+        ssl_certificate_key /usr/local/etc/v2ray/v2ray.key;
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers EECDH+CHACHA20:EECDH+ECDSA+AES128:EECDH+aRSA+AES128:RSA+AES128:EECDH+ECDSA+AES256:EECDH+aRSA+AES256:RSA+AES256;
+
+        location ~ /vless {
+            if ($http_upgrade != "Websocket") { rewrite /(.*) /vless break; }
+            proxy_redirect off;
+            proxy_pass http://127.0.0.1:10001;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+
+        location / {
+            if ($http_upgrade != "Websocket") { rewrite /(.*) / break; }
+            proxy_redirect off;
+            proxy_pass http://127.0.0.1:10002;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+
+        location ~ /trojan-ws {
+            if ($http_upgrade != "Websocket") { rewrite /(.*) /trojan-ws break; }
+            proxy_redirect off;
+            proxy_pass http://127.0.0.1:10003;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+
+        location ^~ /vless-grpc {
+            proxy_redirect off;
+            grpc_set_header X-Real-IP $remote_addr;
+            grpc_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            grpc_set_header Host $http_host;
+            grpc_pass grpc://127.0.0.1:10005;
+        }
+
+        location ^~ /vmess-grpc {
+            proxy_redirect off;
+            grpc_set_header X-Real-IP $remote_addr;
+            grpc_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            grpc_set_header Host $http_host;
+            grpc_pass grpc://127.0.0.1:10006;
+        }
+
+        location ^~ /trojan-grpc {
+            proxy_redirect off;
+            grpc_set_header X-Real-IP $remote_addr;
+            grpc_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            grpc_set_header Host $http_host;
+            grpc_pass grpc://127.0.0.1:10007;
+        }
+    }
+}
