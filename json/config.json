@@ -48,7 +48,7 @@
        "streamSettings":{
          "network": "ws",
             "wsSettings": {
-                "path": "/vmess"
+                "path": "/"
           }
         }
      },
