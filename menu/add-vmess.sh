@@ -1,4 +1,6 @@
 #!/bin/bash
+
+# Base By
 # Dinda Putri Cindyani
 
 # Variabel Konfigurasi
@@ -11,16 +13,14 @@ json="/usr/local/etc/v2ray/config.json"
 isp=$(cat /root/.isp)
 region=$(cat /root/.region)
 
-clear
-echo -e "\e[33m\033[0m" | lolcat
-echo -e "                  Rerechan02                  "
-echo -e "\e[33m\033[0m" | lolcat
+clear                "
+echo -e "══════════════════════════" | lolcat
 echo -e ""
 echo -e " Informasi menambah akun VMess"
 echo -e ""
-echo -e " Format Masa Aktif (hari):"
+echo -e " Format Masa Aktif (days):"
 echo -e " Masa aktif akun yang ingin dibuat"
-echo -e "\e[33m\033[0m" | lolcat
+echo -e "══════════════════════════" | lolcat
 echo -e ""
 
 # Fungsi untuk mengecek apakah username sudah ada di database
@@ -118,9 +118,9 @@ vmesslink2="vmess://$(echo $ask | base64 -w 0)"
 # Kirim Notifikasi Telegram
 clear
 TEKS=$(cat <<EOF
-<b></b>
+<b>══════════════════════════</b>
 <b>    &lt; VMESS ACCOUNT &gt;    </b>
-<b></b>
+<b>══════════════════════════</b>
 <b>Host/IP      :</b> <code>${domain}</code>
 <b>Username     :</b> <code>${user}</code>
 <b>ISP          :</b> <code>${isp}</code>
@@ -131,16 +131,15 @@ TEKS=$(cat <<EOF
 <b>Network      :</b> <code>websocket</code>
 <b>Path         :</b> <code>/vmessws</code>
 <b>Path Opok    :</b> <code>/worryfree /kuota-habis</code>
-
-<b></b>
+<b>══════════════════════════</b>
 <b>Link TLS     :</b>
 <pre>${vmesslink1}</pre>
-<b></b>
+<b>══════════════════════════</b>
 <b>Link None    :</b>
 <pre>${vmesslink2}</pre>
-<b></b>
+<b>══════════════════════════</b>
 <b>Expired      :</b> <code>${exp}</code>
-<b></b>
+<b>══════════════════════════</b>
 EOF
 )
 
@@ -150,9 +149,9 @@ curl -s -X POST "https://api.telegram.org/bot$telegram_bot_token/sendMessage" \
     --data-urlencode "text=$TEKS" > /dev/null
 
 # Menampilkan Data Akun
-echo -e ""
+echo -e "══════════════════════════"
 echo -e "    <  VMESS ACCOUNT >"
-echo -e ""
+echo -e "══════════════════════════"
 echo -e ""
 echo -e "Host/IP      : $domain"
 echo -e "Username     : $user"
@@ -164,10 +163,10 @@ echo -e "UUID         : $uuid"
 echo -e "Network      : websocket"
 echo -e "Path         : /vmessws"
 echo -e "Path Opok    : /worryfree /kuota-habis"
-echo -e ""
+echo -e "══════════════════════════"
 echo -e "Link TLS     : $vmesslink1"
-echo -e ""
+echo -e "══════════════════════════"
 echo -e "Link None    : $vmesslink2"
-echo -e ""
+echo -e "══════════════════════════"
 echo -e "Expired      : $exp"
-echo -e ""
+echo -e "══════════════════════════"
